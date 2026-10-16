@@ -1,0 +1,52 @@
+class MiniVirtualPC:
+    def __init__(self):
+        # Memória RAM simulada com 256 posições
+        self.memory = [0] * 256
+        # Registradores e ponteiro de instrução (Program Counter)
+        self.registers = {'A': 0, 'PC': 0}
+        self.running = True
+
+    def load_program(self, program):
+        """Carrega o programa na memória RAM a partir da posição 0."""
+        for i, instruction in enumerate(program):
+            self.memory[i] = instruction
+
+    def run(self):
+        """Executa o ciclo de busca e execução do processador."""
+        print("--- Iniciando o PC Virtual ---")
+        while self.running:
+            pc = self.registers['PC']
+            opcode = self.memory[pc]
+
+            # Instrução 0: HALT (Parar o sistema)
+            if opcode == 0:
+                print("Sistema desligado (HALT).")
+                self.running = False
+            
+            # Instrução 1: LOAD (Carrega um valor no registrador A)
+            # Formato: [1, valor]
+            elif opcode == 1:
+                val = self.memory[pc + 1]
+                self.registers['A'] = val
+                self.registers['PC'] += 2
+            
+            # Instrução 2: PRINT (Mostra o valor do registrador A no console)
+            # Formato: [2]
+            elif opcode == 2:
+                print(f"[Tela do PC Virtual] Registrador A = {self.registers['A']}")
+                self.registers['PC'] += 1
+            
+            else:
+                print(f"Erro: Instrução desconhecida '{opcode}' no endereço {pc}.")
+                self.running = False
+
+# --- Testando o PC Virtual ---
+# Programa: 
+# 1. Carrega o número 42 no registrador A (Instrução 1, seguida de 42)
+# 2. Imprime o valor na tela (Instrução 2)
+# 3. Desliga a máquina (Instrução 0)
+meu_programa = [1, 42, 2, 0]
+
+pc_virtual = MiniVirtualPC()
+pc_virtual.load_program(meu_programa)
+pc_virtual.run()
